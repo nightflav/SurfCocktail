@@ -42,9 +42,11 @@ fun MainNav(
         ) {
             val detailsComponent = appComponent.detailComponent().create()
             val viewModel = detailsComponent.detailViewModel
+            val id = it.arguments?.getString("id").toString()
             DetailsScreen(
                 navController,
-                viewModel
+                viewModel,
+                id
             )
         }
         composable(
@@ -55,9 +57,11 @@ fun MainNav(
         ) {
             val editCocktailComponent = appComponent.editCocktailComponent().create()
             val viewModel = editCocktailComponent.viewModel
+            val id = it.arguments?.getString("id").toString()
             EditCocktailScreen(
                 navController,
-                viewModel
+                viewModel,
+                id
             )
         }
     }

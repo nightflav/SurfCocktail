@@ -5,5 +5,5 @@ data class CocktailDTO(
     val name: String = "",
     val description: String = "",
     val recipe: String = "",
-    val ingredients: Array<String>
+    val ingredients: Array<String> = emptyArray()
 )

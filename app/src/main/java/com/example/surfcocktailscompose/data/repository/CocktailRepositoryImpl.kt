@@ -17,7 +17,7 @@ class CocktailRepositoryImpl (
     private val cocktailsDao: CocktailDao
 ) : CocktailsRepository {
 
-    override suspend fun loadCocktailsFromDB(): Flow<Resource<List<CocktailDTO>>> {
+    override fun loadCocktailsFromDB(): Flow<Resource<List<CocktailDTO>>> {
         return flow {
             emit(Resource.Loading())
             val cocktails = cocktailsDao.getAllCocktails()
@@ -34,7 +34,7 @@ class CocktailRepositoryImpl (
         }
     }
 
-    override suspend fun loadCocktailByIdFromDB(id: String): Flow<Resource<CocktailDTO>> {
+    override fun loadCocktailByIdFromDB(id: String): Flow<Resource<CocktailDTO>> {
         return flow {
             emit(Resource.Loading())
             val cocktail = cocktailsDao.getCocktailById(id = id).map {

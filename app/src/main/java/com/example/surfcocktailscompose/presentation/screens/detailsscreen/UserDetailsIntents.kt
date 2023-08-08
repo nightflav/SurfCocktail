@@ -1,5 +1,7 @@
 package com.example.surfcocktailscompose.presentation.screens.detailsscreen
 
-sealed interface UserDetailsIntents {
+import com.example.surfcocktailscompose.util.UiEvent
+
+sealed interface UserDetailsIntents : UiEvent {
     data class EditCurrentCocktail(val id: String) : UserDetailsIntents
 }

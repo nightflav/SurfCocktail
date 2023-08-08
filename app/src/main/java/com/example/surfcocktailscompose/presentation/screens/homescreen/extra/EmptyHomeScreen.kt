@@ -1,4 +1,4 @@
-package com.example.surfcocktailscompose.presentation.screens.homescreen
+package com.example.surfcocktailscompose.presentation.screens.homescreen.extra
 
 import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.animateFloat
@@ -35,8 +35,8 @@ fun EmptyHomeScreen(
         label = "arrow_animation"
     )
     val scale by arrowPosition.animateFloat(
-        initialValue = 1f,
-        targetValue = 3f,
+        initialValue = 0.5f,
+        targetValue = 1f,
         animationSpec = infiniteRepeatable(
             animation = tween(durationMillis = 1000),
             repeatMode = RepeatMode.Reverse
@@ -53,7 +53,6 @@ fun EmptyHomeScreen(
             contentDescription = null,
             modifier = Modifier
                 .size(300.dp)
-                .weight(0.7F)
                 .padding(top = 32.dp, bottom = 16.dp)
         )
         Text(
@@ -61,13 +60,11 @@ fun EmptyHomeScreen(
             fontSize = 36.sp,
             modifier = Modifier
                 .padding(bottom = 48.dp)
-                .weight(0.3F)
         )
         Text(
             text = stringResource(id = R.string.add_first_cocktail),
             modifier = Modifier
                 .padding(bottom = 16.dp)
-                .weight(0.2F)
                 .sizeIn(maxWidth = 128.dp),
             color = MaterialTheme.colorScheme.onBackground,
             fontSize = 20.sp,
@@ -77,28 +74,38 @@ fun EmptyHomeScreen(
             painter = painterResource(id = R.drawable.create_first_cocktail_arrow),
             contentDescription = null,
             modifier = Modifier
-                .padding(bottom = (16 * scale).dp)
-                .weight(0.2F)
-                .size(12.dp)
+                .padding(top = (16 * scale).dp, bottom = ((1-scale) * 16).dp)
+                .size(36.dp)
         )
-        FloatingActionButton(
-            modifier = Modifier
-                .padding(bottom = 20.dp)
-                .size(84.dp),
-            onClick = onCreateNewCocktail,
-            elevation = FloatingActionButtonDefaults.elevation(
-                defaultElevation = 0.dp,
-            ),
-            containerColor = MaterialTheme.colorScheme.secondary,
-            contentColor = MaterialTheme.colorScheme.onSecondary,
-            shape = MaterialTheme.shapes.extraLarge.copy(CornerSize(percent = 50))
+        HomeFAB (
+            modifier = Modifier.padding(top = 16.dp)
         ) {
-            Icon(
-                painter = painterResource(
-                    id = R.drawable.add_icon
-                ),
-                contentDescription = null
-            )
+            onCreateNewCocktail()
         }
+    }
+}
+
+@Composable
+fun HomeFAB(
+    modifier: Modifier = Modifier,
+    onCreateNewCocktail: () -> Unit
+) {
+    FloatingActionButton(
+        modifier = modifier
+            .size(84.dp),
+        onClick = onCreateNewCocktail,
+        elevation = FloatingActionButtonDefaults.elevation(
+            defaultElevation = 0.dp,
+        ),
+        containerColor = MaterialTheme.colorScheme.secondary,
+        contentColor = MaterialTheme.colorScheme.onSecondary,
+        shape = MaterialTheme.shapes.extraLarge.copy(CornerSize(percent = 50))
+    ) {
+        Icon(
+            painter = painterResource(
+                id = R.drawable.add_icon
+            ),
+            contentDescription = null
+        )
     }
 }
