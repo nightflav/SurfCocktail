@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">SurfCocktailsCompose</string>
+    <string name="my_cocktails_empty_screen">My cocktails</string>
+    <string name="add_first_cocktail">Add your first cocktail here</string>
+</resources>
