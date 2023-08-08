@@ -1,6 +1,7 @@
 package com.example.surfcocktailscompose
 
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.core.view.WindowCompat
@@ -19,6 +20,7 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         val appComponent = getAppComponent()
         WindowCompat.setDecorFitsSystemWindows(window, false)
+        Log.d("TAGTAGTAG", "Here")
         setContent {
             SurfCocktailsComposeTheme {
                 navHostController = rememberNavController()

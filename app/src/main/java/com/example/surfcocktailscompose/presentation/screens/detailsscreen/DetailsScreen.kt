@@ -51,7 +51,7 @@ fun DetailsScreen(
 
         state.errorState -> {
             ErrorHomeScreen {
-                navController.navigate(Screens.HomeScreen.route)
+                navController.navigate(Screens.HomeScreen.argumentlessRoute)
             }
         }
 
@@ -62,7 +62,7 @@ fun DetailsScreen(
                     contentDescription = null
                 )
                 BottomSheetScreen(cocktail = state.cocktail) {
-                    navController.navigate(Screens.EditCocktailScreen.route + "/$id")
+                    navController.navigate(Screens.EditCocktailScreen.argumentlessRoute + "/$id")
                 }
             }
         }

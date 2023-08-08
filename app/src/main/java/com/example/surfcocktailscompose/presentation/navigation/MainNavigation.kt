@@ -22,7 +22,7 @@ fun MainNav(
 ) {
     NavHost(
         navController = navController,
-        startDestination = Screens.HomeScreen.route
+        startDestination = Screens.HomeScreen.argumentlessRoute
     ) {
         composable(
             route = Screens.HomeScreen.route
@@ -58,6 +58,7 @@ fun MainNav(
             val editCocktailComponent = appComponent.editCocktailComponent().create()
             val viewModel = editCocktailComponent.viewModel
             val id = it.arguments?.getString("id").toString()
+            Log.d("TAGTAGTAG", id)
             EditCocktailScreen(
                 navController,
                 viewModel,

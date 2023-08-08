@@ -30,17 +30,17 @@ class EditCocktailViewModel @Inject constructor(
 
     fun sendEvent(event: UserEditCocktailIntents) {
         viewModelScope.launch {
-            val cocktail =
-                if (event.id != CREATE_NEW_COCKTAIL_ID) cocktailsRepo.loadCocktailByIdFromDB(event.id)
-                else flowOf(
-                    Resource.Success(
-                        CocktailDTO(
-                            id = System.currentTimeMillis().hashCode().toString()
-                        )
-                    )
-                )
             when (event) {
                 is UserEditCocktailIntents.Init -> {
+                    val cocktail =
+                        if (event.id != CREATE_NEW_COCKTAIL_ID) cocktailsRepo.loadCocktailByIdFromDB(event.id)
+                        else flowOf(
+                            Resource.Success(
+                                CocktailDTO(
+                                    id = System.currentTimeMillis().hashCode().toString()
+                                )
+                            )
+                        )
                     screenState.emit(
                         EditCocktailScreenState(
                             isLoading = true
@@ -101,7 +101,15 @@ class EditCocktailViewModel @Inject constructor(
                 }
 
                 is UserEditCocktailIntents.SaveNewCocktail -> {
-                    cocktailsRepo.addCocktailToDb(event.cocktail)
+                    cocktailsRepo.addCocktailToDb(
+                        cocktailDTO = CocktailDTO(
+                            id = currState.id,
+                            name = currState.name,
+                            description = currState.description,
+                            recipe = currState.recipe,
+                            ingredients = currState.ingredients
+                        )
+                    )
                 }
 
                 is UserEditCocktailIntents.OpenDialog -> {

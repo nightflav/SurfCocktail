@@ -1,5 +1,6 @@
 package com.example.surfcocktailscompose.presentation.screens.homescreen
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -38,6 +39,7 @@ fun HomeScreen(
     navController: NavHostController,
     homeViewModel: HomeViewModel = viewModel()
 ) {
+    Log.d("TAGTAGTAG", "Home screen")
     val state by homeViewModel.state.collectAsState(HomeScreenState())
     when {
         state.isLoading -> {
@@ -47,14 +49,16 @@ fun HomeScreen(
         state.errorState -> {
             ErrorHomeScreen {
                 navController.navigate(
-                    route = navController.currentBackStackEntry?.id ?: Screens.HomeScreen.route
+                    route = navController.currentBackStackEntry?.id ?: Screens.HomeScreen.argumentlessRoute
                 )
             }
         }
 
         state.cocktails.isEmpty() -> {
             EmptyHomeScreen {
-                navController.navigate(route = Screens.EditCocktailScreen.route + "/$CREATE_NEW_COCKTAIL_ID")
+                Log.d("TAGTAGTAG", "Tapped a button")
+                Log.d("TAGTAGTAG", Screens.EditCocktailScreen.argumentlessRoute + "/$CREATE_NEW_COCKTAIL_ID")
+                navController.navigate(route = Screens.EditCocktailScreen.argumentlessRoute + "/$CREATE_NEW_COCKTAIL_ID")
             }
         }
 
@@ -62,7 +66,7 @@ fun HomeScreen(
             FulfilledHomeScreen(
                 list = state.cocktails,
                 onItemClicked = { id ->
-                    navController.navigate(Screens.DetailsScreen.route + "/$id")
+                    navController.navigate(Screens.DetailsScreen.argumentlessRoute + "/$id")
                 }
             )
         }

@@ -24,6 +24,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
+import com.example.surfcocktailscompose.presentation.navigation.Screens
 import com.example.surfcocktailscompose.presentation.screens.homescreen.ErrorHomeScreen
 import com.example.surfcocktailscompose.presentation.screens.homescreen.extra.LoadingHomeScreen
 
@@ -40,7 +41,18 @@ fun EditCocktailScreen(
         state.isLoading -> LoadingHomeScreen()
         state.errorState -> ErrorHomeScreen {}
         else -> {
-
+            EditScreen(
+                state = state, viewModel = viewModel, id = id,
+                onCancel = {
+                    navController.popBackStack()
+                },
+                onSave = {
+                    viewModel.sendEvent(
+                        UserEditCocktailIntents.SaveNewCocktail
+                    )
+                    navController.navigate(Screens.HomeScreen.argumentlessRoute)
+                }
+            )
         }
     }
 }
