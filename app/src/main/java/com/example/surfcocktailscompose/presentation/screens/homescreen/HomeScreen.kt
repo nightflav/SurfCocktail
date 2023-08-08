@@ -54,7 +54,7 @@ fun HomeScreen(
 
         state.cocktails.isEmpty() -> {
             EmptyHomeScreen {
-                navController.navigate(route = Screens.EditCocktailScreen.route + CREATE_NEW_COCKTAIL_ID)
+                navController.navigate(route = Screens.EditCocktailScreen.route + "/$CREATE_NEW_COCKTAIL_ID")
             }
         }
 

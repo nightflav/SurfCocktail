@@ -1,5 +1,6 @@
 package com.example.surfcocktailscompose.presentation.screens.editcocktailscreen
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.surfcocktailscompose.data.model.CocktailDTO
@@ -47,6 +48,8 @@ class EditCocktailViewModel @Inject constructor(
                     )
                     cocktail.collect {
                         if (it is Resource.Success) {
+
+                            Log.d("nice", "${it.data}")
                             val newCocktail = it.data
                             screenState.emit(
                                 currState.copy(
