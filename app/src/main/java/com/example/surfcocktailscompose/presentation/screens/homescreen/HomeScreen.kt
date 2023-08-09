@@ -16,8 +16,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -38,9 +36,9 @@ import com.example.surfcocktailscompose.util.Consts.CREATE_NEW_COCKTAIL_ID
 @Composable
 fun HomeScreen(
     navController: NavHostController,
+    state: HomeScreenState,
     homeViewModel: HomeViewModel
 ) {
-    val state by homeViewModel.state.collectAsState(HomeScreenState())
     when {
         state.isLoading -> {
             LoadingHomeScreen()
@@ -119,7 +117,7 @@ fun FulfilledHomeScreen(
                     horizontalArrangement = Arrangement.spacedBy(8.dp),
                     verticalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
-                    items(list.size) {index ->
+                    items(list.size) { index ->
                         CocktailItem(
                             name = list[index].name ?: "",
                             id = list[index].id,

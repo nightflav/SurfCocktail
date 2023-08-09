@@ -10,7 +10,7 @@ data class EditCocktailScreenState(
     val currIngredient: String = "",
     val ingredients: Array<String> = emptyArray(),
     val recipe: String = "",
-    val isLoading: Boolean = true,
+    val isLoading: Boolean = false,
     val errorState: Boolean = false,
     val error: Throwable? = null,
     val showDialog: Boolean = false

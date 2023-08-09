@@ -7,15 +7,9 @@ import com.example.surfcocktailscompose.data.repository.CocktailsRepository
 import com.example.surfcocktailscompose.util.BaseViewModel
 import com.example.surfcocktailscompose.util.Consts.CREATE_NEW_COCKTAIL_ID
 import com.example.surfcocktailscompose.util.Resource
-import kotlinx.coroutines.FlowPreview
-import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.flow.consumeAsFlow
-import kotlinx.coroutines.flow.debounce
-import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -29,62 +23,60 @@ class EditCocktailViewModel @Inject constructor(
     private val currState
         get() = screenState.value
 
-    val events = Channel<UserEditCocktailIntents>()
+    private lateinit var startState: EditCocktailScreenState
 
-    init {
-        subscribeForIntents()
-    }
-
-    @OptIn(FlowPreview::class)
-    private fun subscribeForIntents() {
+    fun sendEvent(event: UserEditCocktailIntents) {
         viewModelScope.launch {
-            events.consumeAsFlow()
-                .collectLatest {
-                val event = it
-                when (event) {
-                    is UserEditCocktailIntents.Init -> {
-                        Log.d("TAGTAGTAG", "got event with id ${event.id}")
-                        initialize(event.id)
-                    }
+            when (event) {
+                is UserEditCocktailIntents.Init -> {
+                    initialize(event.id)
+                }
 
-                    UserEditCocktailIntents.AddNewIngredient -> {
-                        addNewIngredient()
-                    }
+                UserEditCocktailIntents.AddNewIngredient -> {
+                    addNewIngredient()
+                }
 
-                    is UserEditCocktailIntents.EditDescription -> {
-                        editDescription(event.desc)
-                    }
+                is UserEditCocktailIntents.EditDescription -> {
+                    editDescription(event.desc)
+                }
 
-                    is UserEditCocktailIntents.EditName -> {
-                        editName(event.name)
-                    }
+                is UserEditCocktailIntents.EditName -> {
+                    editName(event.name)
+                }
 
-                    is UserEditCocktailIntents.EditRecipe -> {
-                        editRecipe(event.recipe)
-                    }
+                is UserEditCocktailIntents.EditRecipe -> {
+                    editRecipe(event.recipe)
+                }
 
-                    is UserEditCocktailIntents.SaveNewCocktail -> {
-                        saveCocktail()
-                    }
+                is UserEditCocktailIntents.SaveNewCocktail -> {
+                    saveCocktail()
+                }
 
-                    is UserEditCocktailIntents.OpenDialog -> {
-                        openDialog()
-                    }
+                is UserEditCocktailIntents.OpenDialog -> {
+                    openDialog()
+                }
 
-                    UserEditCocktailIntents.CloseDialog -> {
-                        closeDialog()
-                    }
+                UserEditCocktailIntents.CloseDialog -> {
+                    closeDialog()
+                }
 
-                    is UserEditCocktailIntents.EditCurrentIngredient -> {
-                        editCurrIngredient(event.ingredient)
-                    }
+                is UserEditCocktailIntents.EditCurrentIngredient -> {
+                    editCurrIngredient(event.ingredient)
+                }
 
-                    is UserEditCocktailIntents.DeleteIngredient -> {
-                        deleteIngredient(event.ingredient)
-                    }
+                is UserEditCocktailIntents.DeleteIngredient -> {
+                    deleteIngredient(event.ingredient)
+                }
+
+                UserEditCocktailIntents.CancelEditing -> {
+                    returnToStart()
                 }
             }
         }
+    }
+
+    private suspend fun returnToStart() {
+        screenState.emit(startState)
     }
 
     private suspend fun deleteIngredient(ing: String) {
@@ -128,15 +120,17 @@ class EditCocktailViewModel @Inject constructor(
             )
         )
 
-    private suspend inline fun saveCocktail() = cocktailsRepo.addCocktailToDb(
-        cocktailDTO = CocktailDTO(
-            id = currState.id,
-            name = currState.name,
-            description = currState.description,
-            recipe = currState.recipe,
-            ingredients = currState.ingredients
+    private suspend inline fun saveCocktail() {
+        cocktailsRepo.addCocktailToDb(
+            cocktailDTO = CocktailDTO(
+                id = currState.id,
+                name = currState.name,
+                description = currState.description,
+                recipe = currState.recipe,
+                ingredients = currState.ingredients
+            )
         )
-    )
+    }
 
     private suspend fun editRecipe(recipe: String) {
         screenState.emit(
@@ -176,8 +170,9 @@ class EditCocktailViewModel @Inject constructor(
 
     private suspend fun initialize(initialId: String) {
         val id = System.currentTimeMillis().hashCode().toString()
+        Log.d("TAGTAGTAG", "Initializing with initialId = $initialId")
         val cocktail =
-            if (initialId != CREATE_NEW_COCKTAIL_ID) cocktailsRepo.loadCocktailByIdFromDB(id)
+            if (initialId != CREATE_NEW_COCKTAIL_ID) cocktailsRepo.loadCocktailByIdFromDB(initialId)
             else flowOf(
                 Resource.Success(
                     CocktailDTO(
@@ -185,30 +180,26 @@ class EditCocktailViewModel @Inject constructor(
                     )
                 )
             )
+        Log.d("TAGTAGTAG", "Got $cocktail")
         cocktail.collect {
-            Log.d("TAGTAGTAG", "collecting $it")
-        }
-        screenState.emit(
-            EditCocktailScreenState(
-                isLoading = true
-            )
-        )
-        cocktail.collect {
+            Log.d("TAGTAGTAG", "Cocktail is $it")
             if (it is Resource.Success) {
                 val newCocktail = it.data
-                screenState.emit(
-                    currState.copy(
-                        id = id,
-                        name = newCocktail.name ?: "",
-                        description = newCocktail.description ?: "",
-                        recipe = newCocktail.recipe ?: "",
-                        ingredients = newCocktail.ingredients ?: emptyArray(),
-                        isLoading = false,
-                        error = null,
-                        errorState = false,
-                    )
+                Log.d("TAGTAGTAG", "Here got some $newCocktail")
+                val state = currState.copy(
+                    id = newCocktail.id,
+                    name = newCocktail.name ?: "",
+                    description = newCocktail.description ?: "",
+                    recipe = newCocktail.recipe ?: "",
+                    ingredients = newCocktail.ingredients ?: emptyArray(),
+                    isLoading = false,
+                    error = null,
+                    errorState = false,
                 )
-                Log.d("TAGTAGTAG", "currState is $currState")
+                startState = state
+                screenState.emit(
+                    state
+                )
             }
         }
     }

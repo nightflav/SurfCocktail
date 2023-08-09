@@ -1,12 +1,9 @@
 package com.example.surfcocktailscompose.presentation.screens.detailsscreen
 
-import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -22,9 +19,6 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberBottomSheetScaffoldState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
@@ -36,20 +30,14 @@ import com.example.surfcocktailscompose.R
 import com.example.surfcocktailscompose.data.model.CocktailDTO
 import com.example.surfcocktailscompose.presentation.navigation.Screens
 import com.example.surfcocktailscompose.presentation.screens.homescreen.ErrorHomeScreen
-import com.example.surfcocktailscompose.presentation.screens.homescreen.extra.LoadingHomeScreen
 
 @Composable
 fun DetailsScreen(
     navController: NavHostController,
-    viewModel: DetailsViewModel,
+    state: DetailsScreenState,
     id: String
 ) {
-    val state by viewModel.state.collectAsState(initial = DetailsScreenState())
     when {
-        state.isLoading -> {
-            LoadingHomeScreen()
-        }
-
         state.errorState -> {
             ErrorHomeScreen {
                 navController.navigate(Screens.HomeScreen.argumentlessRoute)
@@ -63,6 +51,7 @@ fun DetailsScreen(
                     contentDescription = null
                 )
                 BottomSheetScreen(cocktail = state.cocktail) {
+                    navController.popBackStack()
                     navController.navigate(Screens.EditCocktailScreen.argumentlessRoute + "/$id")
                 }
             }

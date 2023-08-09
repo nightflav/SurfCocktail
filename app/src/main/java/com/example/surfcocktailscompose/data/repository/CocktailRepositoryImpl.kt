@@ -22,33 +22,31 @@ class CocktailRepositoryImpl(
             emit(Resource.Loading())
             val cocktails = cocktailsDao.getAllCocktails()
                 .map { list ->
-                    if (list == null)
-                        Resource.Error<List<CocktailDTO>>(
-                            NoSuchElementInDatabaseException,
-                            null
-                        )
+                    (list?.toCocktailDTOList())
+                }
+                .map {
+                    if (it == null)
+                        Resource.Error(NoSuchElementInDatabaseException)
                     else
-                        Resource.Success(list.toCocktailDTOList())
+                        Resource.Success(it)
                 }
             emitAll(cocktails)
         }
     }
 
     override fun loadCocktailByIdFromDB(id: String): Flow<Resource<CocktailDTO>> {
+        Log.d("TAGTAGTAG", "Trying to get cocktail by $id")
         return flow {
             emit(Resource.Loading())
-            val cocktail = cocktailsDao.getCocktailById(id = id).map {
+            val cocktail = cocktailsDao.getCocktailById(id = id)
+            val tmp = cocktail.map {
+                Log.d("TAGTAGTAG", "Got this $it")
                 if (it == null)
-                    Resource.Error<CocktailDTO>(
-                        NoSuchElementInDatabaseException,
-                        null
-                    )
+                    Resource.Error<CocktailDTO>(NoSuchElementInDatabaseException, null)
                 else
-                    Resource.Success(
-                        it.toCocktailDTO()
-                    )
+                    Resource.Success(it.toCocktailDTO())
             }
-            emitAll(cocktail)
+            emitAll(tmp)
         }
     }
 

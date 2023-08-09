@@ -1,29 +1,41 @@
 package com.example.surfcocktailscompose.presentation.navigation
 
-import android.content.Context
-import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
-import com.example.surfcocktailscompose.App
 import com.example.surfcocktailscompose.di.AppComponent
 import com.example.surfcocktailscompose.presentation.screens.detailsscreen.DetailsScreen
-import com.example.surfcocktailscompose.presentation.screens.homescreen.HomeScreen
+import com.example.surfcocktailscompose.presentation.screens.detailsscreen.DetailsScreenState
 import com.example.surfcocktailscompose.presentation.screens.editcocktailscreen.EditCocktailScreen
-import com.example.surfcocktailscompose.presentation.screens.editcocktailscreen.UserEditCocktailIntents
+import com.example.surfcocktailscompose.presentation.screens.editcocktailscreen.EditCocktailScreenState
+import com.example.surfcocktailscompose.presentation.screens.homescreen.HomeScreen
+import com.example.surfcocktailscompose.presentation.screens.homescreen.HomeScreenState
 
 @Composable
 fun MainNav(
     navController: NavHostController,
     appComponent: AppComponent
 ) {
+    val homeComponent = appComponent.homeComponent().create()
+    val homeViewModel = homeComponent.viewModel
+    val detailsComponent = appComponent.detailComponent().create()
+    val detailsViewModel = detailsComponent.detailViewModel
+    val editCocktailComponent = appComponent.editCocktailComponent().create()
+    val editViewModel = editCocktailComponent.viewModel
+
+    val homeState by homeViewModel.state.collectAsState(initial = HomeScreenState())
+    val detailsState by detailsViewModel.state.collectAsState(initial = DetailsScreenState())
+    val editState by editViewModel.state.collectAsState(initial = EditCocktailScreenState())
+
     NavHost(
         navController = navController,
         startDestination = Screens.HomeScreen.argumentlessRoute,
@@ -34,11 +46,10 @@ fun MainNav(
         composable(
             route = Screens.HomeScreen.route
         ) {
-            val homeComponent = appComponent.homeComponent().create()
-            val viewModel = homeComponent.viewModel
             HomeScreen(
-                navController = navController,
-                homeViewModel = viewModel
+                navController,
+                homeState,
+                homeViewModel
             )
         }
         composable(
@@ -47,13 +58,11 @@ fun MainNav(
                 type = NavType.StringType
             })
         ) {
-            val detailsComponent = appComponent.detailComponent().create()
-            val viewModel = detailsComponent.detailViewModel
             val id = it.arguments?.getString("id").toString()
-            viewModel.requestForCocktailById(id)
+            LaunchedEffect(key1 = Unit) { detailsViewModel.requestForCocktailById(id) }
             DetailsScreen(
                 navController,
-                viewModel,
+                detailsState,
                 id
             )
         }
@@ -63,13 +72,16 @@ fun MainNav(
                 type = NavType.StringType
             })
         ) {
-            val editCocktailComponent = appComponent.editCocktailComponent().create()
-            val viewModel = editCocktailComponent.viewModel
             val id = it.arguments?.getString("id").toString()
-            viewModel.events.trySend(UserEditCocktailIntents.Init(id))
+
+            LaunchedEffect(key1 = Unit) {
+
+            }
             EditCocktailScreen(
                 navController,
-                viewModel,
+                editViewModel,
+                editState,
+                id
             )
         }
     }

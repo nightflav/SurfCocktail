@@ -1,21 +1,12 @@
 package com.example.surfcocktailscompose.presentation.screens.detailsscreen
 
-import android.util.Log
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.surfcocktailscompose.data.model.CocktailDTO
 import com.example.surfcocktailscompose.data.repository.CocktailsRepository
-import com.example.surfcocktailscompose.presentation.screens.homescreen.HomeScreenState
-import com.example.surfcocktailscompose.presentation.screens.homescreen.UserHomeIntents
-import com.example.surfcocktailscompose.util.BaseReducer
 import com.example.surfcocktailscompose.util.BaseViewModel
 import com.example.surfcocktailscompose.util.Resource
-import com.example.surfcocktailscompose.util.UiEvent
-import com.example.surfcocktailscompose.util.UiState
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -28,7 +19,6 @@ class DetailsViewModel @Inject constructor(
     private val currState = _detailsScreenState.value
 
     fun requestForCocktailById(id: String) {
-        Log.d("TAGTAGTAG", "got id $id")
         viewModelScope.launch {
             _detailsScreenState.emit(
                 currState.copy(

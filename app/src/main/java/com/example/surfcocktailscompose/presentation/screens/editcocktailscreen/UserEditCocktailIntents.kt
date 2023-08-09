@@ -1,6 +1,5 @@
 package com.example.surfcocktailscompose.presentation.screens.editcocktailscreen
 
-import com.example.surfcocktailscompose.data.model.CocktailDTO
 import com.example.surfcocktailscompose.util.UiEvent
 
 sealed interface UserEditCocktailIntents : UiEvent {
@@ -21,4 +20,5 @@ sealed interface UserEditCocktailIntents : UiEvent {
 
     data class DeleteIngredient(val ingredient: String) : UserEditCocktailIntents
 
+    object CancelEditing : UserEditCocktailIntents
 }
