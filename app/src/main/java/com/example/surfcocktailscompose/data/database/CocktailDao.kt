@@ -24,4 +24,7 @@ interface CocktailDao {
 
     @Query("SELECT * FROM CocktailDatabase WHERE id=:id")
     fun getCocktailById(id: String): Flow<CocktailDBO?>
+
+    @Query("DELETE FROM CocktailDatabase")
+    suspend fun clearDatabase()
 }

@@ -7,6 +7,7 @@ data class EditCocktailScreenState(
     val id: String = CREATE_NEW_COCKTAIL_ID,
     val name: String = "",
     val description: String = "",
+    val currIngredient: String = "",
     val ingredients: Array<String> = emptyArray(),
     val recipe: String = "",
     val isLoading: Boolean = true,

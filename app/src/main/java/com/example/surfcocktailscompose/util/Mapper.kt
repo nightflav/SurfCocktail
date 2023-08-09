@@ -13,10 +13,10 @@ fun CocktailDBO.toCocktailDTO() = CocktailDTO(
 
 fun CocktailDTO.toCocktailDBO() = CocktailDBO(
     id = this.id,
-    name = this.name,
-    description = this.description,
-    ingredients = this.ingredients,
-    recipe = this.recipe,
+    name = this.name ?: "",
+    description = this.description ?: "",
+    ingredients = this.ingredients ?: emptyArray(),
+    recipe = this.recipe ?: "",
 )
 
 fun Iterable<CocktailDBO>.toCocktailDTOList() = this.map { it.toCocktailDTO() }

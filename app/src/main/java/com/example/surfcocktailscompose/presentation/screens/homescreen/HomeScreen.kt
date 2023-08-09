@@ -1,17 +1,19 @@
 package com.example.surfcocktailscompose.presentation.screens.homescreen
 
-import android.util.Log
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.safeContent
-import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.material3.FabPosition
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -23,7 +25,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.example.surfcocktailscompose.R
 import com.example.surfcocktailscompose.data.model.CocktailDTO
@@ -37,9 +38,8 @@ import com.example.surfcocktailscompose.util.Consts.CREATE_NEW_COCKTAIL_ID
 @Composable
 fun HomeScreen(
     navController: NavHostController,
-    homeViewModel: HomeViewModel = viewModel()
+    homeViewModel: HomeViewModel
 ) {
-    Log.d("TAGTAGTAG", "Home screen")
     val state by homeViewModel.state.collectAsState(HomeScreenState())
     when {
         state.isLoading -> {
@@ -49,16 +49,17 @@ fun HomeScreen(
         state.errorState -> {
             ErrorHomeScreen {
                 navController.navigate(
-                    route = navController.currentBackStackEntry?.id ?: Screens.HomeScreen.argumentlessRoute
+                    route = navController.currentBackStackEntry?.id
+                        ?: Screens.HomeScreen.argumentlessRoute
                 )
             }
         }
 
         state.cocktails.isEmpty() -> {
             EmptyHomeScreen {
-                Log.d("TAGTAGTAG", "Tapped a button")
-                Log.d("TAGTAGTAG", Screens.EditCocktailScreen.argumentlessRoute + "/$CREATE_NEW_COCKTAIL_ID")
-                navController.navigate(route = Screens.EditCocktailScreen.argumentlessRoute + "/$CREATE_NEW_COCKTAIL_ID")
+                navController.navigate(
+                    route = Screens.EditCocktailScreen.argumentlessRoute + "/$CREATE_NEW_COCKTAIL_ID"
+                )
             }
         }
 
@@ -67,6 +68,14 @@ fun HomeScreen(
                 list = state.cocktails,
                 onItemClicked = { id ->
                     navController.navigate(Screens.DetailsScreen.argumentlessRoute + "/$id")
+                },
+                onCreateNewCocktail = {
+                    navController.navigate(
+                        Screens.EditCocktailScreen.argumentlessRoute + "/$CREATE_NEW_COCKTAIL_ID"
+                    )
+                },
+                onDeleteAllCocktails = {
+                    homeViewModel.sendEvent(UserHomeIntents.DeleteAllCocktails)
                 }
             )
         }
@@ -76,44 +85,63 @@ fun HomeScreen(
 @Composable
 fun FulfilledHomeScreen(
     list: List<CocktailDTO>,
-    onItemClicked: (String) -> Unit
+    onItemClicked: (String) -> Unit,
+    onCreateNewCocktail: () -> Unit,
+    onDeleteAllCocktails: () -> Unit
 ) {
-    Box(
-        modifier = Modifier.windowInsetsPadding(WindowInsets.safeContent),
-        contentAlignment = Alignment.BottomCenter
-    ) {
-        Box(
-            modifier = Modifier
-        ) {
-            LazyVerticalGrid(
-                modifier = Modifier.padding(horizontal = 16.dp),
-                columns = GridCells.Fixed(2),
-                contentPadding = PaddingValues(vertical = 96.dp),
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
-                verticalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                items(list.size) {
-                    CocktailItem(
-                        name = list[it].name,
-                        id = list[it].id,
-                        onItemClickListened = { id ->
-                            onItemClicked(id)
-                        }
-                    )
-                }
-            }
-            Text(
-                text = stringResource(id = R.string.my_cocktails_empty_screen),
+    Scaffold(
+        modifier = Modifier.background(
+            MaterialTheme.colorScheme.background
+        ),
+        floatingActionButton = {
+            HomeFAB(
                 modifier = Modifier
-                    .padding(24.dp)
-                    .background(Color.Transparent)
-                    .fillMaxWidth(),
-                fontSize = 36.sp,
-                textAlign = TextAlign.Center
+                    .background(Color.Transparent),
+                onCreateNewCocktail = { onCreateNewCocktail() }
             )
+        },
+        floatingActionButtonPosition = FabPosition.Center,
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(it),
+            verticalArrangement = Arrangement.SpaceBetween,
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Box(
+                modifier = Modifier
+            ) {
+                LazyVerticalGrid(
+                    modifier = Modifier.padding(horizontal = 16.dp),
+                    columns = GridCells.Fixed(2),
+                    contentPadding = PaddingValues(vertical = 96.dp),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    items(list.size) {index ->
+                        CocktailItem(
+                            name = list[index].name ?: "",
+                            id = list[index].id,
+                            onItemClickListened = { id ->
+                                onItemClicked(id)
+                            }
+                        )
+                    }
+                }
+                Text(
+                    text = stringResource(id = R.string.my_cocktails_empty_screen),
+                    modifier = Modifier
+                        .padding(24.dp)
+                        .background(Color.Transparent)
+                        .fillMaxWidth()
+                        .clickable {
+                            onDeleteAllCocktails()
+                        },
+                    fontSize = 36.sp,
+                    textAlign = TextAlign.Center
+                )
+            }
         }
-        HomeFAB (
-            modifier = Modifier.background(Color.Transparent)
-        ) {}
     }
 }

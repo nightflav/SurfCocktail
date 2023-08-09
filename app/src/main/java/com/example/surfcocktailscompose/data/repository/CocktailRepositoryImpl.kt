@@ -1,7 +1,7 @@
 package com.example.surfcocktailscompose.data.repository
 
+import android.util.Log
 import com.example.surfcocktailscompose.data.database.CocktailDao
-import com.example.surfcocktailscompose.data.model.CocktailDBO
 import com.example.surfcocktailscompose.data.model.CocktailDTO
 import com.example.surfcocktailscompose.data.repository.Errors.NoSuchElementInDatabaseException
 import com.example.surfcocktailscompose.util.Resource
@@ -13,7 +13,7 @@ import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 
-class CocktailRepositoryImpl (
+class CocktailRepositoryImpl(
     private val cocktailsDao: CocktailDao
 ) : CocktailsRepository {
 
@@ -54,6 +54,10 @@ class CocktailRepositoryImpl (
 
     override suspend fun addCocktailToDb(cocktailDTO: CocktailDTO) {
         cocktailsDao.insertCocktail(cocktailDTO.toCocktailDBO())
+    }
+
+    override suspend fun deleteAllCocktails() {
+        cocktailsDao.clearDatabase()
     }
 }
 

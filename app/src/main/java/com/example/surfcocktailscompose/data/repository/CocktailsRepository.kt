@@ -11,4 +11,6 @@ interface CocktailsRepository {
     fun loadCocktailByIdFromDB(id: String): Flow<Resource<CocktailDTO>>
 
     suspend fun addCocktailToDb(cocktailDTO: CocktailDTO)
+
+    suspend fun deleteAllCocktails()
 }

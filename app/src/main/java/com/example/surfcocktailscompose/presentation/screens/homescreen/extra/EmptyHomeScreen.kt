@@ -5,13 +5,16 @@ import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.sizeIn
 import androidx.compose.foundation.shape.CornerSize
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.FloatingActionButtonDefaults
 import androidx.compose.material3.Icon
@@ -78,10 +81,9 @@ fun EmptyHomeScreen(
                 .size(36.dp)
         )
         HomeFAB (
-            modifier = Modifier.padding(top = 16.dp)
-        ) {
-            onCreateNewCocktail()
-        }
+            modifier = Modifier.padding(top = 16.dp),
+            onCreateNewCocktail = { onCreateNewCocktail() }
+        )
     }
 }
 
@@ -99,7 +101,7 @@ fun HomeFAB(
         ),
         containerColor = MaterialTheme.colorScheme.secondary,
         contentColor = MaterialTheme.colorScheme.onSecondary,
-        shape = MaterialTheme.shapes.extraLarge.copy(CornerSize(percent = 50))
+        shape = RoundedCornerShape(80.dp)
     ) {
         Icon(
             painter = painterResource(

@@ -1,5 +1,6 @@
 package com.example.surfcocktailscompose.presentation.screens.homescreen
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.surfcocktailscompose.data.repository.CocktailsRepository
@@ -23,6 +24,45 @@ class HomeViewModel @Inject constructor(
     private val _homeScreenState = MutableStateFlow(HomeScreenState())
     override val state: Flow<HomeScreenState> = _homeScreenState.asStateFlow()
     private val currState = _homeScreenState.asStateFlow().value
+
+    fun sendEvent(event: UserHomeIntents) {
+        when(event) {
+            UserHomeIntents.CreateNewCocktail -> {}
+            is UserHomeIntents.SelectExistingCocktail -> {}
+            UserHomeIntents.DeleteAllCocktails -> {
+                viewModelScope.launch {
+                    cocktailRepo.deleteAllCocktails()
+                    cocktailRepo.loadCocktailsFromDB()
+                        .collect { _homeScreenState.emit(
+                            when(it) {
+                                is Resource.Error -> {
+                                    currState.copy(
+                                        isLoading = false,
+                                        cocktails = emptyList(),
+                                        errorState = true,
+                                        error = it.error as Exception
+                                    )
+                                }
+                                is Resource.Loading -> {
+                                    currState.copy(
+                                        isLoading = true,
+                                        cocktails = emptyList(),
+                                        errorState = false
+                                    )
+                                }
+                                is Resource.Success -> {
+                                    currState.copy(
+                                        cocktails = it.data,
+                                        isLoading = false,
+                                        errorState = false
+                                    )
+                                }
+                            }
+                        ) }
+                }
+            }
+        }
+    }
 
     init {
         viewModelScope.launch {

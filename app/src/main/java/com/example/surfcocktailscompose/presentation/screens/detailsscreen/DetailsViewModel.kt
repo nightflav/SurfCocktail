@@ -1,5 +1,6 @@
 package com.example.surfcocktailscompose.presentation.screens.detailsscreen
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.surfcocktailscompose.data.model.CocktailDTO
@@ -27,6 +28,7 @@ class DetailsViewModel @Inject constructor(
     private val currState = _detailsScreenState.value
 
     fun requestForCocktailById(id: String) {
+        Log.d("TAGTAGTAG", "got id $id")
         viewModelScope.launch {
             _detailsScreenState.emit(
                 currState.copy(
